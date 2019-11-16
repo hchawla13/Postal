@@ -8,6 +8,7 @@ import 'react-table/react-table.css'
 const axios = require('axios');
 //https://api.myjson.com/bins/fikz6 five addresses with names
 // https://api.myjson.com/bins/123jsq 1000 records
+// https://api.myjson.com/bins/6ixqq local addresses
 
 
 
@@ -18,9 +19,9 @@ class Postal extends Component {
         greatPlaceCoords: PropTypes.any
       };
       static defaultProps = {
-        center: [59.938043, 30.337157],
+        center: [19.1590, 72.9986],
         zoom: 9,
-        greatPlaceCoords: {lat: 59.724465, lng: 30.080121}
+        greatPlaceCoords: {lat: 19.1590, lng: 72.9986}
       };
       shouldComponentUpdate = shouldPureComponentUpdate;
     state={
@@ -28,7 +29,7 @@ class Postal extends Component {
     }
     
     componentDidMount() {
-        axios.get('https://api.myjson.com/bins/fikz6')
+        axios.get('https://api.myjson.com/bins/6ixqq')
         .then((response) =>{
             console.log("response",response.data)
             this.setState({locationList:response.data})
@@ -46,16 +47,22 @@ class Postal extends Component {
                 <GoogleMap
                     center={this.props.center}
                     zoom={this.props.zoom}>
-                    <MyGreatPlace lat={59.955413} lng={30.337844} text={'A'} />
-                    <MyGreatPlace {...this.props.greatPlaceCoords} text={'B'}  />
+                    {
+                        this.state.locationList.map((item)=>{
+                            return(
+                                <MyGreatPlace key={item.id} lat={item.latitude} lng={item.longitude} text={item.name} />
+                            )
+                        })
+                    }
+                <MyGreatPlace {...this.props.greatPlaceCoords} text={'airoli'}  />
                 </GoogleMap>
-                {/* {
-                    this.state.locationList.map((item)=>{
-                        return (
-                        <li key={item.id}>{item.name}</li>
-                        )
-                    })
-                } */}
+                {/* <GoogleMap
+                    center={this.props.center}
+                    zoom={this.props.zoom}>
+                    <MyGreatPlace lat={19.0760} lng={72.8777} text={'Thane'} />
+                    <MyGreatPlace {...this.props.greatPlaceCoords} text={'airoli'}  />
+                </GoogleMap> */}
+                
             </div>
         )
     }
