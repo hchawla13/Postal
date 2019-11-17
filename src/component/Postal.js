@@ -7,15 +7,9 @@ import GoogleMap from 'google-map-react';
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 const axios = require('axios');
-
-//https://api.myjson.com/bins/fikz6 five addresses with names
-// https://api.myjson.com/bins/123jsq 1000 records
-// https://api.myjson.com/bins/6ixqq local addresses
-// https://api.myjson.com/bins/8g60y local address with pincode
-
-
-
 class Postal extends Component {
+    //jsonUrl = 'https://api.myjson.com/bins/pohte'
+    jsonUrl = 'https://jsonstorage.net/api/items/914ca707-f4da-447b-97fb-73aab6183624'
     static propTypes = {
         center: PropTypes.array,
         zoom: PropTypes.number,
@@ -35,12 +29,12 @@ class Postal extends Component {
     
     componentDidMount() {
         
-        axios.get('https://api.myjson.com/bins/pohte')
+        axios.get(this.jsonUrl)
         .then((response) =>{
-            console.log("response",response.data)
             this.setState({
                 locationList:response.data,
-                originalList:response.data
+                originalList:response.data,
+                center:response.data.map((el)=>{return [el.latitude,el.longitude]})[0]
             })
         })
         .catch((err)=>{
@@ -53,8 +47,10 @@ class Postal extends Component {
         let searcjQery = event.target.value.toLowerCase();
         let locationList = this.state.originalList
         locationList = locationList.filter((el) => {
-            let searchValue = el.pincode.toLowerCase();
-            return searchValue.indexOf(searcjQery) !== -1;
+            if(el.pincode){
+                let searchValue = el.pincode.toLowerCase();
+                return searchValue.indexOf(searcjQery) !== -1;
+            }
         })
         
         if(locationList.length===1){
