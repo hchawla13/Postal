@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import shouldPureComponentUpdate from 'react-pure-render';
 import Table from './Table'
-import SearchBox from './SearchBox'
 import PropTypes from 'prop-types';
 import MyGreatPlace from './MyGreatPlace';
 import GoogleMap from 'google-map-react';
@@ -30,7 +29,8 @@ class Postal extends Component {
       shouldComponentUpdate = shouldPureComponentUpdate;
     state={
         locationList:[],
-        originalList:[]
+        originalList:[],
+        center:[19.1590, 72.9986]
     }
     
     componentDidMount() {
@@ -50,13 +50,20 @@ class Postal extends Component {
     }
     
     searchHandler = (event)=>{
-        console.log("searching",event.target.value.toLowerCase())
         let searcjQery = event.target.value.toLowerCase();
         let locationList = this.state.originalList
         locationList = locationList.filter((el) => {
             let searchValue = el.pincode.toLowerCase();
             return searchValue.indexOf(searcjQery) !== -1;
         })
+        
+        if(locationList.length===1){
+            //focus to new point if search result returns one result
+            this.setState({center:locationList.map((el)=>{return [el.latitude,el.longitude]})[0]})
+        }
+        else{
+            this.setState({center:this.props.center})
+        }
         this.setState({
             locationList: locationList
         })
@@ -67,10 +74,7 @@ class Postal extends Component {
         return (
             <React.Fragment>
                 <div style={{float:'right',width:'50%',height:'100%'}}>
-                {/* <SearchBox
-                    placeholder={"123 anywhere st."}
-                    onPlacesChanged={this.handleSearch} /> */}
-                    <input type="text" className="search" onChange={this.searchHandler}/>
+                    <input placeholder="search by pincode" type="text" className="search" onChange={this.searchHandler}/>
                     <ul>
                         {
                             locationList.map((item)=>{
@@ -83,7 +87,7 @@ class Postal extends Component {
                 </div>
                 <div style={{position:'absolute',width:'50%',height:'100%'}}>
                     <GoogleMap
-                        center={this.props.center}
+                        center={this.state.center}
                         zoom={this.props.zoom}>
                         {
                             this.state.locationList.map((item)=>{

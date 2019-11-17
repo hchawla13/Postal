@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Postal from './component/Postal'
-import Test from './component/Test'
+
 
 
 function App() {
